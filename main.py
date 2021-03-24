@@ -15,24 +15,20 @@ wn = nltk.WordNetLemmatizer()
 ps = nltk.PorterStemmer()
 
 
-def remove_punct(text):
-    text_nopunct = ''.join([fg for fg in text if fg not in string.punctuation])
-    return text_nopunct
-
-
-def tokenize_text(text):
+def clean_text(text):
+    text = "".join([word for word in text if word not in string.punctuation])
     tokens = re.split('\W+', text)
-    return tokens
+    text = [word for word in tokens if word not in stopwords]
+    return text
 
-
-def remove_stopwords(tokenized_text):
-    text = [w for w in tokenized_text if w not in stopwords]
+def lemmatizing(tokenized_text):
+    text = [wn.lemmatize(word) for word in tokenized_text]
     return text
 
 
-df['fund_nopunct'] = df['FundStrategy'].apply(lambda x: remove_punct(x))
-df['fund_tokens'] = df['FundStrategy'].apply(lambda x: tokenize_text(x.lower()))
-df['fund_nostop'] = df['fund_tokens'].apply(lambda x: remove_stopwords(x))
+df['fund_cleaned'] = df['FundStrategy'].apply(lambda x: clean_text(x.lower()))
+df['fund_lemmatized'] = df['fund_cleaned'].apply(lambda x: lemmatizing(x))
+
 
 # saving the DataFrame as a CSV file
 df_csv_data = df.to_csv('C:/Users/Irfan/Desktop/Capstone/sample_data.csv', header=True)
